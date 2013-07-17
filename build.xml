@@ -44,7 +44,7 @@
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
                 <attribute name="Rsrc-Main-Class" value="codechicken.obfuscator.fs.Main"/>
                 <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ asm-all-4.0.jar guava-12.0.1.jar jopt-simple-4.5.jar"/>
+                <attribute name="Rsrc-Class-Path" value="./ asm-debug-all-4.1.jar guava-14.0.jar jopt-simple-4.5.jar"/>
             </manifest>
             <fileset dir="bin"/>
             <fileset dir="." includes="src/**"/>
