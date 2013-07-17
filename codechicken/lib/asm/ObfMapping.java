@@ -1,4 +1,4 @@
-package codechicken.core.asm;
+package codechicken.lib.asm;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.Remapper;
@@ -13,13 +13,6 @@ import com.google.common.base.Objects;
 
 public class ObfMapping
 {
-    /**
-     * CCC will deal with this.
-     */
-    public static Remapper runtimeMapper;
-    
-    public static final boolean obfuscated = false;
-    
     public String s_owner;
     public String s_name;
     public String s_desc;
@@ -28,7 +21,7 @@ public class ObfMapping
     
     public ObfMapping(String owner)
     {
-        this(owner, null, null);
+        this(owner, "", "");
     }
     
     public ObfMapping(String owner, String name, String desc)
@@ -199,15 +192,7 @@ public class ObfMapping
         
         return this;
     }
-
-    public void toRuntime()
-    {
-        if(!runtime)
-            map(runtimeMapper);
-        
-        runtime = true;
-    }
-
+    
     public ObfMapping copy()
     {
         return new ObfMapping(s_owner, s_name, s_desc);

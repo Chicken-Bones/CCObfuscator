@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import codechicken.core.asm.ObfMapping;
+import codechicken.lib.asm.ObfMapping;
 
 import static org.objectweb.asm.tree.AbstractInsnNode.*;
 

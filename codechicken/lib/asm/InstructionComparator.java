@@ -1,4 +1,4 @@
-package codechicken.core.asm;
+package codechicken.lib.asm;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 
 import static org.objectweb.asm.tree.AbstractInsnNode.*;
 
-import codechicken.core.asm.ObfMapping;
+import codechicken.lib.asm.ObfMapping;
 
 public class InstructionComparator
 {    

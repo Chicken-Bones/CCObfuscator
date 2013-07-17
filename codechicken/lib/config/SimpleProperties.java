@@ -1,4 +1,4 @@
-package codechicken.core.config;
+package codechicken.lib.config;
 
 import java.io.BufferedReader;
 import java.io.File;

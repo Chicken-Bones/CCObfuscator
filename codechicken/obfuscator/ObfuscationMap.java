@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
 
-import codechicken.core.asm.ObfMapping;
+import codechicken.lib.asm.ObfMapping;
 
 public class ObfuscationMap
 {

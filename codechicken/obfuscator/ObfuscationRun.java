@@ -12,7 +12,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.RemappingClassAdapter;
 import org.objectweb.asm.tree.ClassNode;
 
-import codechicken.core.asm.ObfMapping;
+import codechicken.lib.asm.ObfMapping;
 import codechicken.obfuscator.ObfuscationMap.ObfuscationEntry;
 
 import com.google.common.base.Function;

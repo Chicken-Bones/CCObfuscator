@@ -3,7 +3,8 @@ package codechicken.obfuscator.fs;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import codechicken.core.config.SimpleProperties;
+
+import codechicken.lib.config.SimpleProperties;
 import codechicken.obfuscator.ObfuscationRun;
 
 import joptsimple.OptionException;

@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.objectweb.asm.commons.Remapper;
-import codechicken.core.asm.ObfMapping;
+
+import codechicken.lib.asm.ObfMapping;
 
 import static org.objectweb.asm.tree.AbstractInsnNode.*;
 
