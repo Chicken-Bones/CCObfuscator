@@ -1,7 +1,6 @@
 package codechicken.obfuscator.fs;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import codechicken.obfuscator.ObfuscationRun;
 
@@ -56,7 +55,6 @@ public class ObfWriteThread extends Thread
             }
         }
         
-        long millis = System.currentTimeMillis()-run.startTime();
-        run.out().println("Done in "+new DecimalFormat("0.00").format(millis/1000D)+"s");
+        run.finish();
     }
 }

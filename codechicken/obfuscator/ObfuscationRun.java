@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class ObfuscationRun
 
     public boolean clean;
     private long startTime;
+    private boolean finished;
     
     public ObfuscationRun(boolean obfuscate, File confDir, Map<String, String> config)
     {
@@ -374,5 +376,17 @@ public class ObfuscationRun
             parents.add(s_interface);
         
         return parents;
+    }
+
+    public void finish()
+    {
+        long millis = System.currentTimeMillis()-startTime;
+        out().println("Done in "+new DecimalFormat("0.00").format(millis/1000D)+"s");
+        finished = true;
+    }
+    
+    public boolean finished()
+    {
+        return finished;
     }
 }
