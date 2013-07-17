@@ -34,13 +34,14 @@ public class Main
         parser.acceptsAll(asList("noclean"), "Disable cleaning of the output dir");
         parser.acceptsAll(asList("q", "quiet"), "Disable error logging");
         parser.acceptsAll(asList("v", "verbose"), "Enable detailed logging");
+        parser.acceptsAll(asList("zip"), "Set this to zip the contents of obfuscated directories");
         parser.acceptsAll(asList("srg"), "Obfuscate/Deobfuscate to srg names");
         parser.acceptsAll(asList("mcp"), "MCP dir, equal to -r " +
                 "-input \"<mcp>/bin/minecraft\" " +
                 "-libs \"<mcp>/jars/libraries\" " +
                 "-m \"<mcp>/conf\" " +
                 "-o \"reobf/minecraft\"")
-            .withRequiredArg().ofType(File.class);
+            .withOptionalArg().ofType(File.class);
         
         OptionSet options;
         try
@@ -77,7 +78,7 @@ public class Main
         
         if(options.has("mcp"))
         {
-            File mcp = (File) options.valueOf("mcp");
+            File mcp = options.hasArgument("mcp") ? (File) options.valueOf("mcp") : new File(".");
             obfuscate = true;
             mods = new File[]{new File(mcp, "bin/minecraft")};
             libs = new File[]{new File(mcp, "jars/libraries")};
@@ -137,7 +138,7 @@ public class Main
         if(options.has("srg"))
             r.setSearge();
         
-        new ObfReadThread(r, mods, libs, outDir).start();
+        new ObfReadThread(r, mods, libs, outDir, options.has("zip")).start();
     }
 
     private static void require(String string, OptionParser parser, OptionSet options) throws ParseException, IOException

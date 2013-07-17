@@ -10,6 +10,9 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipMod extends Mod
 {
+    private ZipInputStream input;
+    private ZipOutputStream output;
+    
     public ZipMod(ObfReadThread read, String name, InputStream in, boolean modify) throws IOException
     {
         super(read, name, modify);
@@ -64,7 +67,4 @@ public class ZipMod extends Mod
     {
         output.close();
     }
-    
-    private ZipInputStream input;
-    private ZipOutputStream output;
 }

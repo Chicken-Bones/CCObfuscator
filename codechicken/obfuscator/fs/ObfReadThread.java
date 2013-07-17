@@ -27,17 +27,19 @@ public class ObfReadThread extends Thread implements ModEntryReader, IHeirachyEv
 
     private String[] excludedPackages;
     private String[] ignoredPackages;
+    private boolean zipDirs;
     
     private Queue<ModEntry> writeQueue = new LinkedList<ModEntry>();
     public List<Mod> modEntries = new LinkedList<Mod>();
     private boolean finishedReading = false;
     
-    public ObfReadThread(ObfuscationRun run, File[] mods, File[] libs, File outDir)
+    public ObfReadThread(ObfuscationRun run, File[] mods, File[] libs, File outDir, boolean zipDirs)
     {
         this.run = run;
         this.mods = mods;
         this.libs = libs;
         this.outDir = outDir;
+        this.zipDirs = zipDirs;
         
         run.setHeirachyEvaluator(this);
         excludedPackages = run.config.get("excludedPackages").split(";");
@@ -80,7 +82,9 @@ public class ObfReadThread extends Thread implements ModEntryReader, IHeirachyEv
             try
             {
                 if(file.isDirectory())
-                    new DirMod(this, file, modify).read(this);
+                {
+                    new DirMod(this, file, modify, zipDirs).read(this);
+                }
                 else if(file.getName().endsWith(".jar") || file.getName().endsWith(".zip"))
                 {
                     FileInputStream in = new FileInputStream(file);
