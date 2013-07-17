@@ -37,7 +37,7 @@
                 <attribute name="Main-Class" value="codechicken.obfuscator.fs.Main"/>
             </manifest>
             <fileset dir="bin"/>
-            <fileset dir="." includes="src/**"/>
+            <fileset dir="." includes="src/**/*.*"/>
 		</jar>
         <jar destfile="CCObfuscator-all.jar">
             <manifest>
@@ -47,7 +47,7 @@
                 <attribute name="Rsrc-Class-Path" value="./ asm-debug-all-4.1.jar guava-14.0.jar jopt-simple-4.5.jar"/>
             </manifest>
             <fileset dir="bin"/>
-            <fileset dir="." includes="src/**"/>
+            <fileset dir="." includes="src/**/*.*"/>
             <fileset dir="lib"/>
             <zipfileset src="jar-in-jar-loader.zip"/>
         </jar>
