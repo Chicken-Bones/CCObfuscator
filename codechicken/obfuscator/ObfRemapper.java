@@ -19,6 +19,9 @@ public class ObfRemapper extends Remapper
     @Override
     public String map(String name)
     {
+        if(name.indexOf('$') >= 0)
+            return map(name.substring(0, name.indexOf('$')))+name.substring(name.indexOf('$'));
+        
         ObfuscationEntry map;
         if(dir.obfuscate)
             map = obf.lookupMcpClass(name);

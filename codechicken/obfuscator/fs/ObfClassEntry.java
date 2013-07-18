@@ -26,10 +26,7 @@ public class ObfClassEntry extends ModEntry implements IRemappable
     @Override
     public String getName()
     {
-        String name = mod.run.obfMapper.map(cnode.name);
-        if(cnode.outerClass != null)
-            name = mod.run.obfMapper.map(cnode.outerClass)+cnode.name.substring(cnode.name.indexOf('$'));
-        return name + ".class";
+        return mod.run.obfMapper.map(cnode.name) + ".class";
     }
     
     public void remap()

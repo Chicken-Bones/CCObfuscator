@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
@@ -51,9 +52,16 @@ public class ObfuscationMap
 
         public void inheritFrom(ClassEntry p)
         {
-            obfMap.putAll(p.obfMap);
-            srgMap.putAll(p.srgMap);
-            mcpMap.putAll(p.mcpMap);
+            inherit(obfMap, p.obfMap);
+            inherit(srgMap, p.srgMap);
+            inherit(mcpMap, p.mcpMap);
+        }
+        
+        private void inherit(Map<String, ObfuscationEntry> child, Map<String, ObfuscationEntry> parent)
+        {
+            for(Entry<String, ObfuscationEntry> e : parent.entrySet())
+                if(!child.containsKey(e.getKey()))
+                    child.put(e.getKey(), e.getValue());
         }
     }
     
