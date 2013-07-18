@@ -7,23 +7,26 @@ import codechicken.obfuscator.ObfuscationMap.ObfuscationEntry;
 
 public class ObfRemapper extends Remapper
 {
-    private ObfuscationRun run;
-    public ObfRemapper(ObfuscationRun run)
+    public final ObfuscationMap obf;
+    public ObfDirection dir;
+    
+    public ObfRemapper(ObfuscationMap obf, ObfDirection dir)
     {
-        this.run = run;
+        this.obf = obf;
+        this.dir = dir;
     }
     
     @Override
     public String map(String name)
     {
         ObfuscationEntry map;
-        if(run.obfuscate)
-            map = run.obf.lookupMcpClass(name);
+        if(dir.obfuscate)
+            map = obf.lookupMcpClass(name);
         else
-            map = run.obf.lookupObfClass(name);
+            map = obf.lookupObfClass(name);
 
         if(map != null)
-            return run.obfuscate(map).s_owner;
+            return dir.obfuscate(map).s_owner;
         
         return name;
     }
@@ -32,16 +35,16 @@ public class ObfRemapper extends Remapper
     public String mapFieldName(String owner, String name, String desc)
     {
         ObfuscationEntry map;
-        if(run.obfuscate)
-            map = run.obf.lookupMcpField(owner, name);
+        if(dir.obfuscate)
+            map = obf.lookupMcpField(owner, name);
         else
-            map = run.obf.lookupObfField(owner, name);
+            map = obf.lookupObfField(owner, name);
         
         if(map == null)
-            map = run.obf.lookupSrg(name);
+            map = obf.lookupSrg(name);
         
         if(map != null)
-            return run.obfuscate(map).s_name;
+            return dir.obfuscate(map).s_name;
         
         return name;
     }
@@ -53,16 +56,16 @@ public class ObfRemapper extends Remapper
             return name;
         
         ObfuscationEntry map;
-        if(run.obfuscate)
-            map = run.obf.lookupMcpMethod(owner, name, desc);
+        if(dir.obfuscate)
+            map = obf.lookupMcpMethod(owner, name, desc);
         else
-            map = run.obf.lookupObfMethod(owner, name, desc);
+            map = obf.lookupObfMethod(owner, name, desc);
         
         if(map == null)
-            map = run.obf.lookupSrg(name);
+            map = obf.lookupSrg(name);
         
         if(map != null)
-            return run.obfuscate(map).s_name;
+            return dir.obfuscate(map).s_name;
         
         return name;
     }
@@ -88,11 +91,11 @@ public class ObfRemapper extends Remapper
         if(!(cst instanceof String))
             return cst;
 
-        if(run.srg_cst)
+        if(dir.srg_cst)
         {
-            ObfuscationEntry map = run.obf.lookupSrg((String) cst);
+            ObfuscationEntry map = obf.lookupSrg((String) cst);
             if(map != null)
-                return run.obfuscate(map).s_name;
+                return dir.obfuscate(map).s_name;
         }
         return cst;
     }

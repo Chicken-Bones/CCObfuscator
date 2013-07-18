@@ -41,7 +41,7 @@ public class ObfReadThread extends Thread implements ModEntryReader, IHeirachyEv
         this.outDir = outDir;
         this.zipDirs = zipDirs;
         
-        run.setHeirachyEvaluator(this);
+        run.obf.setHeirachyEvaluator(this);
         excludedPackages = run.config.get("excludedPackages").split(";");
         ignoredPackages = run.config.get("ignore").split(";");
         setName("Obfuscation Read");
@@ -162,7 +162,7 @@ public class ObfReadThread extends Thread implements ModEntryReader, IHeirachyEv
     
     private void obfuscate()
     {
-        run.out().println((run.obfuscate ? "O" : "Deo")+"bfuscating classes");
+        run.out().println((run.obfDir.obfuscate ? "O" : "Deo")+"bfuscating classes");
         for(IRemappable e : classes)
             e.remap();
         

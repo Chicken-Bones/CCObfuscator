@@ -1,9 +1,12 @@
 package codechicken.obfuscator;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 
 import codechicken.lib.asm.ObfMapping;
@@ -57,10 +60,21 @@ public class ObfuscationMap
     private Map<String, ClassEntry> srgMap = new HashMap<String, ClassEntry>();
     private Map<String, ClassEntry> obfMap = new HashMap<String, ClassEntry>();
     private ArrayListMultimap<String, ObfuscationEntry> srgMemberMap = ArrayListMultimap.create();
-    private ObfuscationRun run;
-    public ObfuscationMap(ObfuscationRun run)
+    
+    private IHeirachyEvaluator heirachyEvaluator;
+    private HashSet<String> mappedClasses = new HashSet<String>();
+    public ILogStreams log = SystemLogStreams.inst;
+    
+    public ObfuscationMap setHeirachyEvaluator(IHeirachyEvaluator eval)
     {
-        this.run = run;
+        heirachyEvaluator = eval;
+        return this;
+    }
+    
+    public ObfuscationMap setLog(ILogStreams log)
+    {
+        this.log = log;
+        return this;
     }
     
     public ObfuscationEntry addClass(String obf, String srg)
@@ -99,14 +113,14 @@ public class ObfuscationMap
     {
         List<ObfuscationEntry> entries = srgMemberMap.get(srg_name);
         if(entries.isEmpty())
-            run.err().println("Tried to add mcp name ("+mcp_name+") for unknown srg key ("+srg_name+")");
-        else
         {
-            for(ObfuscationEntry entry : entries)
-            {
-                entry.mcp.s_name = mcp_name;
-                srgMap.get(entry.srg.s_owner).mcpMap.put(entry.mcp.s_name.concat(entry.mcp.s_desc), entry);
-            }
+            log.err().println("Tried to add mcp name ("+mcp_name+") for unknown srg key ("+srg_name+")");
+            return;
+        }
+        for(ObfuscationEntry entry : entries)
+        {
+            entry.mcp.s_name = mcp_name;
+            srgMap.get(entry.srg.s_owner).mcpMap.put(entry.mcp.s_name.concat(entry.mcp.s_desc), entry);
         }
     }
     
@@ -138,16 +152,59 @@ public class ObfuscationMap
 
     public ObfuscationEntry lookupMcpMethod(String owner, String name, String desc)
     {
-        run.buildSuperMap(owner);
+        evaluateHeirachy(owner);
         ClassEntry e = srgMap.get(owner);
         return e == null ? null : e.mcpMap.get(name.concat(desc));
     }
 
     public ObfuscationEntry lookupObfMethod(String owner, String name, String desc)
     {
-        run.buildSuperMap(owner);
+        evaluateHeirachy(owner);
         ClassEntry e = obfMap.get(owner);
         return e == null ? null : e.obfMap.get(name.concat(desc));
+    }
+    
+    private boolean isMapped(ObfuscationEntry desc)
+    {
+        return mappedClasses.contains(desc.srg.s_owner);
+    }
+    
+    private ObfuscationEntry getOrCreateClassEntry(String name)
+    {
+        ObfuscationEntry e = lookupObfClass(name);
+        if(e == null)
+            e = lookupMcpClass(name);
+        if(e == null)
+            e = addClass(name, name);//if the class isn't in obf or srg maps, it must be a custom mod class with no name change.
+        return e;
+    }
+
+    public ObfuscationEntry evaluateHeirachy(String name)
+    {
+        ObfuscationEntry desc = getOrCreateClassEntry(name);
+        if(isMapped(desc))
+            return desc;
+
+        mappedClasses.add(desc.srg.s_owner);
+        if(heirachyEvaluator == null)
+            throw new IllegalArgumentException("Cannot call method/field mappings if a heirachy evaluator is not set.");
+        
+        if(!heirachyEvaluator.isLibClass(desc))
+        {
+            List<String> parents = heirachyEvaluator.getParents(desc);
+            if(parents == null)
+                log.err().println("Could not find class: "+desc.srg.s_owner);
+            else
+                for(String parent : parents)
+                    inherit(desc, evaluateHeirachy(parent));
+        }
+        
+        return desc;
+    }
+
+    public void inherit(ObfuscationEntry desc, ObfuscationEntry p_desc)
+    {
+        inherit(desc.srg.s_owner, p_desc.srg.s_owner);
     }
 
     public void inherit(String name, String parent)
@@ -159,5 +216,115 @@ public class ObfuscationMap
         if(p == null)
             throw new IllegalStateException("Tried to inerit from undefired parent: "+name+" extends "+parent);
         e.inheritFrom(p);
+    }
+    
+    public void parseMappings(File confDir)
+    {
+        File srgs = new File(confDir, "packaged.srg");
+        if(!srgs.exists())
+            srgs = new File(confDir, "joined.srg");
+        if(!srgs.exists())
+            throw new RuntimeException("Could not find packaged.srg or joined.srg");
+        File methods = new File(confDir, "methods.csv");
+        if(!methods.exists())
+            throw new RuntimeException("Could not find methods.csv");
+        File fields = new File(confDir, "fields.csv");
+        if(!fields.exists())
+            throw new RuntimeException("Could not find fields.csv");
+        
+        parseSRGS(srgs);
+        parseCSV(methods);
+        parseCSV(fields);
+    }
+    
+    public static String[] splitLast(String s, char c)
+    {
+        int i = s.lastIndexOf(c);
+        return new String[]{s.substring(0, i), s.substring(i+1)};
+    }
+    
+    public static String[] split4(String s, char c)
+    {
+        String[] split = new String[4];
+        int i2 = s.indexOf(c);
+        split[0] = s.substring(0, i2);
+        int i = i2+1;
+        i2 = s.indexOf(c, i);
+        split[1] = s.substring(i, i2);
+        i = i2+1;
+        i2 = s.indexOf(c, i);
+        split[2] = s.substring(i, i2);
+        i = i2+1;
+        i2 = s.indexOf(c, i);
+        split[3] = s.substring(i);
+        return split;
+    }
+
+    private void parseSRGS(File srgs)
+    {
+        log.out().println("Parsing "+srgs.getName());
+        
+        Function<String, Void> function = new Function<String, Void>()
+        {
+            @Override
+            public Void apply(String line)
+            {
+                int hpos = line.indexOf('#');
+                if(hpos > 0)
+                    line = line.substring(0, hpos).trim();
+                if(line.startsWith("CL: "))
+                {
+                    String[] params = splitLast(line.substring(4), ' ');
+                    addClass(params[0], params[1]);
+                }
+                else if(line.startsWith("FD: "))
+                {
+                    String[] params = splitLast(line.substring(4), ' ');
+                    String[] p1 = splitLast(params[0], '/');
+                    String[] p2 = splitLast(params[1], '/');
+                    addField(p1[0], p1[1], 
+                            p2[0], p2[1]);
+                    return null;
+                }
+                else if(line.startsWith("MD: "))
+                {
+                    String[] params = split4(line.substring(4), ' ');
+                    String[] p1 = splitLast(params[0], '/');
+                    String[] p2 = splitLast(params[2], '/');
+                    addMethod(p1[0], p1[1], params[1], 
+                            p2[0], p2[1], params[3]);
+                    return null;
+                }
+                return null;
+            }
+        };
+        
+        ObfuscationRun.processLines(srgs, function);
+    }
+
+    private void parseCSV(File csv)
+    {
+        log.out().println("Parsing "+csv.getName());
+        
+        Function<String, Void> function = new Function<String, Void>()
+        {
+            @Override
+            public Void apply(String line)
+            {
+                if(line.startsWith("func_") || line.startsWith("field_"))
+                {
+                    int i = line.indexOf(',');
+                    String srg = line.substring(0, i);
+                    int i2 = i+1;
+                    i = line.indexOf(',', i2);
+                    String mcp = line.substring(i2, i);
+                    
+                    addMcpName(srg, mcp);
+                }
+                return null;
+            }
+        };
+        
+        ObfuscationRun.processLines(csv, function);
     }
 }

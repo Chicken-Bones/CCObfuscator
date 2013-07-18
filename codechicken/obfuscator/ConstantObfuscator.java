@@ -15,18 +15,16 @@ import static org.objectweb.asm.tree.AbstractInsnNode.*;
 
 public class ConstantObfuscator implements Opcodes
 {
-    public ObfuscationRun run;
+    public ObfRemapper obf;
     public List<ObfMapping> descCalls = new LinkedList<ObfMapping>();
     public List<ObfMapping> classCalls = new LinkedList<ObfMapping>();
     
-    public ConstantObfuscator(ObfuscationRun run)
+    public ConstantObfuscator(ObfRemapper obf, String[] a_classCalls, String[] a_descCalls)
     {
-        this.run = run;
-        String[] a_classCalls = run.config.get("classConstantCalls").split(",");
+        this.obf = obf;
         for(String callDesc : a_classCalls)
             classCalls.add(ObfMapping.fromDesc(callDesc));
         
-        String[] a_descCalls = run.config.get("descConstantCalls").split(",");
         for(String callDesc : a_descCalls)
             descCalls.add(ObfMapping.fromDesc(callDesc));
     }
@@ -43,7 +41,7 @@ public class ConstantObfuscator implements Opcodes
         if(matchesClass(insn))
         {
             LdcInsnNode node1 = (LdcInsnNode) insn;
-            node1.cst = run.obfMapper.map((String) node1.cst);
+            node1.cst = obf.map((String) node1.cst);
         }
         if(matchesDesc(insn))
         {
@@ -51,7 +49,7 @@ public class ConstantObfuscator implements Opcodes
             LdcInsnNode node2 = (LdcInsnNode) node1.getNext();
             LdcInsnNode node3 = (LdcInsnNode) node2.getNext();
             ObfMapping mapping = new ObfMapping((String) node1.cst, (String) node2.cst, (String) node3.cst);
-            run.obfMapper.map(mapping);
+            obf.map(mapping);
             node1.cst = mapping.s_owner;
             node2.cst = mapping.s_name;
             node3.cst = mapping.s_desc;
