@@ -35,6 +35,7 @@ public class ObfWriteThread extends Thread
             {
                 run.err().println("Failed to write entry: "+e.getName()+" of mod "+e.mod.name);
                 ex.printStackTrace(run.err());
+                run.finish(true);
                 return;
             }
         }
@@ -49,10 +50,11 @@ public class ObfWriteThread extends Thread
             {
                 run.err().println("Failed to close mod: "+mod.name);
                 e.printStackTrace(run.err());
+                run.finish(true);
                 return;
             }
         }
         
-        run.finish();
+        run.finish(false);
     }
 }

@@ -209,10 +209,10 @@ public class ObfuscationRun implements ILogStreams
         return parents;
     }
 
-    public void finish()
+    public void finish(boolean errored)
     {
         long millis = System.currentTimeMillis()-startTime;
-        out().println("Done in "+new DecimalFormat("0.00").format(millis/1000D)+"s");
+        out().println((errored ? "Errored after" : "Done in ")+new DecimalFormat("0.00").format(millis/1000D)+"s");
         finished = true;
     }
     

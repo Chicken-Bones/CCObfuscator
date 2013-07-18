@@ -50,6 +50,7 @@ public class ObfReadThread extends Thread implements ModEntryReader, IHeirachyEv
     @Override
     public void run()
     {
+        ObfWriteThread write = null;
         try
         {
             run.start();
@@ -61,7 +62,8 @@ public class ObfReadThread extends Thread implements ModEntryReader, IHeirachyEv
             
             run.parseMappings();
             
-            new ObfWriteThread(this).start();
+            write = new ObfWriteThread(this);
+            write.start();
             
             readMods(libs, false);
             readMods(mods, true);
@@ -71,6 +73,8 @@ public class ObfReadThread extends Thread implements ModEntryReader, IHeirachyEv
         catch(Exception e)
         {
             e.printStackTrace(run.err());
+            if(write == null)
+                run.finish(true);
         }
         finishedReading = true;
     }
