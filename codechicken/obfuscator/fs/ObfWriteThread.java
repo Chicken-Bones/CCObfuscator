@@ -1,7 +1,5 @@
 package codechicken.obfuscator.fs;
 
-import java.io.IOException;
-
 import codechicken.obfuscator.ObfuscationRun;
 
 public class ObfWriteThread extends Thread
@@ -33,10 +31,10 @@ public class ObfWriteThread extends Thread
             {
                 e.mod.write(e);
             }
-            catch(IOException ioe)
+            catch(Exception ex)
             {
                 run.err().println("Failed to write entry: "+e.getName()+" of mod "+e.mod.name);
-                ioe.printStackTrace(run.err());
+                ex.printStackTrace(run.err());
                 return;
             }
         }
@@ -47,7 +45,7 @@ public class ObfWriteThread extends Thread
             {
                 mod.close();
             }
-            catch(IOException e)
+            catch(Exception e)
             {
                 run.err().println("Failed to close mod: "+mod.name);
                 e.printStackTrace(run.err());
