@@ -48,8 +48,7 @@ public class ConstantObfuscator implements Opcodes
             LdcInsnNode node1 = (LdcInsnNode) insn;
             LdcInsnNode node2 = (LdcInsnNode) node1.getNext();
             LdcInsnNode node3 = (LdcInsnNode) node2.getNext();
-            ObfMapping mapping = new ObfMapping((String) node1.cst, (String) node2.cst, (String) node3.cst);
-            obf.map(mapping);
+            ObfMapping mapping = new ObfMapping((String) node1.cst, (String) node2.cst, (String) node3.cst).map(obf);
             node1.cst = mapping.s_owner;
             node2.cst = mapping.s_name;
             node3.cst = mapping.s_desc;

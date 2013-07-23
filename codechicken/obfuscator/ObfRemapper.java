@@ -2,7 +2,6 @@ package codechicken.obfuscator;
 
 import org.objectweb.asm.commons.Remapper;
 
-import codechicken.lib.asm.ObfMapping;
 import codechicken.obfuscator.ObfuscationMap.ObfuscationEntry;
 
 public class ObfRemapper extends Remapper
@@ -73,33 +72,20 @@ public class ObfRemapper extends Remapper
         return name;
     }
 
-    public void map(ObfMapping map)
-    {
-        if(map.s_desc.contains("("))
-        {
-            map.s_name = mapMethodName(map.s_owner, map.s_name, map.s_desc);
-            map.s_desc = mapMethodDesc(map.s_desc);
-        }
-        else
-        {
-            map.s_name = mapFieldName(map.s_owner, map.s_name, map.s_desc);
-            map.s_desc = mapDesc(map.s_desc);
-        }
-        map.s_owner = map(map.s_owner);
-    }
-    
     @Override
     public Object mapValue(Object cst)
     {
-        if(!(cst instanceof String))
-            return cst;
-
-        if(dir.srg_cst)
+        if(cst instanceof String)
         {
-            ObfuscationEntry map = obf.lookupSrg((String) cst);
-            if(map != null)
-                return dir.obfuscate(map).s_name;
+            if(dir.srg_cst)
+            {
+                ObfuscationEntry map = obf.lookupSrg((String) cst);
+                if(map != null)
+                    return dir.obfuscate(map).s_name;
+            }
+            return cst;
         }
-        return cst;
+        
+        return super.mapValue(cst);
     }
 }
