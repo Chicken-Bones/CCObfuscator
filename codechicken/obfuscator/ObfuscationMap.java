@@ -46,7 +46,10 @@ public class ObfuscationMap
             ObfuscationEntry entry = new ObfuscationEntry(obf_desc, srg_desc, srg_desc.copy());
             obfMap.put(obf_desc.s_name.concat(obf_desc.s_desc), entry);
             srgMap.put(srg_desc.s_name, entry);
-            srgMemberMap.put(srg_desc.s_name, entry);
+            
+            if(srg_desc.s_name.startsWith("field_") || srg_desc.s_name.startsWith("func_"))
+                srgMemberMap.put(srg_desc.s_name, entry);
+            
             return entry;
         }
 
@@ -151,6 +154,20 @@ public class ObfuscationMap
     public ObfuscationEntry lookupMcpField(String owner, String name)
     {
         return lookupMcpMethod(owner, name, "");
+    }
+
+    public ObfuscationEntry lookupSrgField(String owner, String name)
+    {
+        if(name.startsWith("field_"))
+        {
+            ObfuscationEntry e = lookupSrg(name);
+            if(e != null)
+                return e;
+        }
+
+        evaluateHeirachy(owner);
+        ClassEntry e = srgMap.get(owner);
+        return e == null ? null : e.srgMap.get(name);
     }
 
     public ObfuscationEntry lookupObfField(String owner, String name)

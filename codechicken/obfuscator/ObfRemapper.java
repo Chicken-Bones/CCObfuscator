@@ -44,7 +44,7 @@ public class ObfRemapper extends Remapper
             map = obf.lookupObfField(owner, name);
         
         if(map == null)
-            map = obf.lookupSrg(name);
+            map = obf.lookupSrgField(owner, name);
         
         if(map != null)
             return dir.obfuscate(map).s_name;
