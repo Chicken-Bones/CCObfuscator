@@ -125,6 +125,7 @@ public class Main
         }
         
         SimpleProperties p = new SimpleProperties(confFile);
+        p.load();
         ObfuscationRun.fillDefaults(p.propertyMap);
         p.save();
         
