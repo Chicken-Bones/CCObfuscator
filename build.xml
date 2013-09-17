@@ -23,7 +23,7 @@
 		<path id="cp">
 			<fileset dir="lib"/>
 		</path>
-		<javac srcdir="src" destdir="bin" includeantruntime="false">
+		<javac srcdir="src" destdir="bin" includeantruntime="false" target="1.6" source="1.6">
 			<classpath refid="cp"/>
 		</javac>
 	</target>
