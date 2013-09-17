@@ -38,7 +38,7 @@ public class Main
         parser.acceptsAll(asList("srg"), "Obfuscate/Deobfuscate to srg names");
         parser.acceptsAll(asList("mcp"), "MCP dir, equal to -r " +
                 "-input \"<mcp>/bin/minecraft\" " +
-                "-libs \"<mcp>/jars/libraries\" " +
+                "-libs \"<mcp>/lib,<mcp>/jars/libraries\" " +
                 "-m \"<mcp>/conf\" " +
                 "-o \"reobf/minecraft\"")
             .withOptionalArg().ofType(File.class);
@@ -81,7 +81,7 @@ public class Main
             File mcp = options.hasArgument("mcp") ? (File) options.valueOf("mcp") : new File(".");
             obfuscate = true;
             mods = new File[]{new File(mcp, "bin/minecraft")};
-            libs = new File[]{new File(mcp, "jars/libraries")};
+            libs = new File[]{new File(mcp, "lib"), new File(mcp, "jars/libraries")};
             confDir = new File(mcp, "conf");
             outDir = new File(mcp, "reobf/minecraft");
         }
