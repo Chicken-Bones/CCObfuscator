@@ -11,8 +11,8 @@
 	<target name="dl-libs">
 		<get dest="lib">
 			<url url="http://repo1.maven.org/maven2/org/ow2/asm/asm-debug-all/4.1/asm-debug-all-4.1.jar"/>
-			<url url="http://s3.amazonaws.com/Minecraft.Download/libraries/com/google/guava/guava/14.0/guava-14.0.jar"/>
-			<url url="http://s3.amazonaws.com/Minecraft.Download/libraries/net/sf/jopt-simple/jopt-simple/4.5/jopt-simple-4.5.jar"/>
+			<url url="http://repo1.maven.org/maven2/com/google/guava/guava/14.0/guava-14.0.jar"/>
+			<url url="http://repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/4.5/jopt-simple-4.5.jar"/>
 		</get>
 	</target>
 	
