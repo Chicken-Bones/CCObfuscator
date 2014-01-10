@@ -71,10 +71,15 @@ public class ASMFileEntry extends ModEntry implements IRemappable
             
             line = line.trim();
             if(line.length() == 0) continue;
-            String[] split = line.replace(" : ", ":").split(" ");
+            String[] split = line.split(" ");
             Integer i_type = types.get(split[0]);
             if(i_type == null)
                 continue;
+            
+            StringBuilder desc = new StringBuilder();
+            for(int j = 1; j < split.length; j++)
+                desc.append(split[j]);
+            split = new String[]{split[0], desc.toString()};
             
             int type = i_type;
             switch(type)

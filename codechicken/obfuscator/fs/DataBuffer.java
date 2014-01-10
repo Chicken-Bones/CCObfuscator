@@ -15,7 +15,12 @@ public class DataBuffer
         public DataEntry(InputStream in) throws IOException
         {
             buf = new byte[blocksize];
-            len = in.read(buf);
+            int read = 0;
+            int total = 0;
+            while((read = in.read(buf, total, buf.length-total)) > 0)
+                total+=read;
+            
+            len = total;
         }
     }
     private LinkedList<DataEntry> data = new LinkedList<DataEntry>();

@@ -54,7 +54,7 @@ public class ObfRemapper extends Remapper
     @Override
     public String mapMethodName(String owner, String name, String desc)
     {
-        if(owner.charAt(0) == '[')
+        if(owner.length() == 0 || owner.charAt(0) == '[')
             return name;
         
         ObfuscationEntry map;
