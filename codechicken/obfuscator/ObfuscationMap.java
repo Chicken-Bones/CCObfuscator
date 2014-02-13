@@ -243,23 +243,11 @@ public class ObfuscationMap
         e.inheritFrom(p);
     }
     
-    public void parseMappings(File confDir)
+    public void parseMappings(File[] mappings)
     {
-        File srgs = new File(confDir, "packaged.srg");
-        if(!srgs.exists())
-            srgs = new File(confDir, "joined.srg");
-        if(!srgs.exists())
-            throw new RuntimeException("Could not find packaged.srg or joined.srg");
-        File methods = new File(confDir, "methods.csv");
-        if(!methods.exists())
-            throw new RuntimeException("Could not find methods.csv");
-        File fields = new File(confDir, "fields.csv");
-        if(!fields.exists())
-            throw new RuntimeException("Could not find fields.csv");
-        
-        parseSRGS(srgs);
-        parseCSV(methods);
-        parseCSV(fields);
+        parseSRGS(mappings[0]);
+        parseCSV(mappings[1]);
+        parseCSV(mappings[2]);
     }
     
     public static String[] splitLast(String s, char c)

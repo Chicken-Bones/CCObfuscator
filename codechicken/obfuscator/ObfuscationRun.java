@@ -21,7 +21,7 @@ public class ObfuscationRun implements ILogStreams
     public final ObfRemapper obfMapper;
     public final ConstantObfuscator cstMappper;
     
-    public File confDir;
+    public File[] mappings;
     public Map<String, String> config;
     
     private PrintStream out = System.out;
@@ -35,10 +35,10 @@ public class ObfuscationRun implements ILogStreams
     private long startTime;
     private boolean finished;
     
-    public ObfuscationRun(boolean obfuscate, File confDir, Map<String, String> config)
+    public ObfuscationRun(boolean obfuscate, File[] mappings, Map<String, String> config)
     {
         obfDir = new ObfDirection().setObfuscate(obfuscate);
-        this.confDir = confDir;
+        this.mappings = mappings;
         this.config = config;
         
         obf = new ObfuscationMap().setLog(this);
@@ -186,6 +186,31 @@ public class ObfuscationRun implements ILogStreams
         }
     }
     
+    public static File[] parseConfDir(File confDir) {
+        File srgDir = new File(confDir, "conf");
+        if(!srgDir.exists())
+            srgDir = confDir;
+        
+        File srgs = new File(srgDir, "packaged.srg");
+        if(!srgs.exists())
+            srgs = new File(srgDir, "joined.srg");
+        if(!srgs.exists())
+            throw new RuntimeException("Could not find packaged.srg or joined.srg");
+        
+        File mapDir = new File(confDir, "mappings");
+        if(!mapDir.exists())
+            mapDir = confDir;
+        
+        File methods = new File(mapDir, "methods.csv");
+        if(!methods.exists())
+            throw new RuntimeException("Could not find methods.csv");
+        File fields = new File(mapDir, "fields.csv");
+        if(!fields.exists())
+            throw new RuntimeException("Could not find fields.csv");
+        
+        return new File[]{srgs, methods, fields};
+    }
+    
     public long startTime()
     {
         return startTime;
@@ -223,6 +248,6 @@ public class ObfuscationRun implements ILogStreams
 
     public void parseMappings()
     {
-        obf.parseMappings(confDir);
+        obf.parseMappings(mappings);
     }
 }

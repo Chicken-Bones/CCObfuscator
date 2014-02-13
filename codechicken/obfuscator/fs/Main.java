@@ -27,7 +27,13 @@ public class Main
             .withRequiredArg().ofType(File.class).withValuesSeparatedBy(',');
         parser.acceptsAll(asList("o", "out"), "Output Path")
             .withRequiredArg().ofType(File.class);
-        parser.acceptsAll(asList("m", "mapping"), "Mcp config dir, must have joined/packaged.srg, methods.csv and fields.csv")
+        parser.acceptsAll(asList("m", "mapping"), "MCP conf or Forge gradle unpacked directory")
+            .withRequiredArg().ofType(File.class);
+        parser.accepts("srg", "joined/packaged.srg file")
+            .withRequiredArg().ofType(File.class);
+        parser.accepts("fields", "fields.csv file")
+            .withRequiredArg().ofType(File.class);
+        parser.accepts("methods", "methods.csv file")
             .withRequiredArg().ofType(File.class);
         parser.acceptsAll(asList("c", "conf"), "Config file")
             .withRequiredArg().ofType(File.class);
@@ -75,6 +81,7 @@ public class Main
         File[] libs = null;
         File confDir = null;
         File outDir = null;
+        File[] mappings = null;
         
         if(options.has("mcp"))
         {
@@ -97,7 +104,12 @@ public class Main
             require("input", parser, options);
             require("libs", parser, options);
             require("out", parser, options);
-            require("mapping", parser, options);
+            
+            if(!options.has("mapping")) {
+                require("srg", parser, options);
+                require("fields", parser, options);
+                require("methods", parser, options);
+            }
         }
         
         if(options.has("reobfuscate"))
@@ -112,6 +124,14 @@ public class Main
             outDir = (File) options.valueOf("out");
         if(options.has("mapping"))
             confDir = (File) options.valueOf("mapping");
+        
+        if(confDir != null)
+            mappings = ObfuscationRun.parseConfDir(confDir);
+        else
+            mappings = new File[]{
+                (File)options.valueOf("srg"),
+                (File)options.valueOf("methods"),
+                (File)options.valueOf("fields")};
         
         File confFile;
         if(options.has("conf"))
@@ -129,7 +149,7 @@ public class Main
         ObfuscationRun.fillDefaults(p.propertyMap);
         p.save();
         
-        ObfuscationRun r = new ObfuscationRun(obfuscate, confDir, p.propertyMap);
+        ObfuscationRun r = new ObfuscationRun(obfuscate, mappings, p.propertyMap);
         if(!options.has("noclean"))
             r.setClean();
         if(options.has("verbose"))
